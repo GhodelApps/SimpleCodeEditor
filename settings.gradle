@@ -1,0 +1,3 @@
+rootProject.name='TextEditor'
+include ':app'
+include ':library'
