@@ -6,10 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.sungbin.texteditor.library.ui.BaseEditText
+    <com.sungbin.texteditor.library.ui.SimpleCodeEditor
         android:id="@+id/edit"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:sce_lineNumberColor="@color/colorPrimaryDark"
+        app:sce_lineColor="@color/colorPrimaryDark"
+        app:sce_selectLineColor="@color/colorPrimaryDark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

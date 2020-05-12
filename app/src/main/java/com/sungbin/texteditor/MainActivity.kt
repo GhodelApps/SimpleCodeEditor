@@ -1,12 +1,10 @@
 package com.sungbin.texteditor
 
-import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import com.sungbin.texteditor.library.ui.BaseEditText
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,8 +12,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        edit.editor.text = SpannableStringBuilder("TEST")
-        edit.lineBackgroundColor = Color.parseColor("#42A5F5")
-        edit.invalidate()
+        edit.editor.text = SpannableStringBuilder(
+                "1234567890\n" +
+                "1234567890\n" +
+                "1234567890\n" +
+                "1234567890\n" +
+                "1234567890\n" +
+                "1234567890\n" +
+                "1234567890\n" +
+                "1234TesT0\n" +
+                "1234567890\n" +
+                "1234567890"
+        )
+        Log.d("AAA - 9", edit.findText("TEST", true)[0][1].toString())
     }
 }

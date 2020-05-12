@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SimpleCodeEditor">
+        <attr name="sce_lineColor" format="color" />
+        <attr name="sce_lineNumberColor" format="color" />
+        <attr name="sce_selectLineColor" format="color" />
+        <attr name="sce_readOnly" format="boolean" />
+        <attr name="sce_applyHighlighter" format="boolean" />
+        <attr name="sce_reservedColor" format="color" />
+        <attr name="sce_numberColor" format="color" />
+        <attr name="stringColor" format="color" />
+        <attr name="sce_annotationColor" format="color" />
+    </declare-styleable>
+</resources>
