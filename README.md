@@ -30,6 +30,7 @@ dependencies {
 ## xml
 ```xml
 <com.sungbin.texteditor.library.ui.SimpleCodeEditor
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/edit"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -44,7 +45,7 @@ dependencies {
 | `sce_lineColor` | Set line color | `Color.GRAY` |
 | `tsce_lineNumberColor` | Set line number color | `Color.GRAY` |
 | `sce_selectLineColor` | set focused line background color | `Color.CYAN` |
-| `sce_applyHighlighter` | Set JavaScript Highlighter (It may cause freezing for long string.) | `true` |
+| `sce_applyHighlighter` | Set JavaScript Highlighter (It may cause freezing for long string) | `true` |
 | `sce_readOnly` | Set editor read-only | `false` |
 | `sce_reservedColor` | Set JavaScript Highlighter Reserved word color | `Color.argb(255, 21, 101, 192)` |
 | `sce_numberColort` | Set JavaScript Highlighter Number color | `Color.argb(255, 191, 54, 12)` |
