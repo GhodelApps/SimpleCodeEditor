@@ -7,21 +7,6 @@
     tools:context=".MainActivity"
     tools:ignore="HardcodedText,MissingConstraints" >
 
-    <Button
-        android:id="@+id/undo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="undo"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-    <Button
-        android:id="@+id/redo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="redo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <com.sungbin.texteditor.library.ui.SimpleCodeEditor
         android:id="@+id/edit"
         android:layout_width="match_parent"
