@@ -33,7 +33,7 @@ class SimpleCodeEditor : ScrollView {
     private var stringColor = Color.argb(255, 255, 160, 0)
     private var annotationColor = Color.argb(255, 139, 195, 74)
 
-    var readOnly = false
+    private var readOnly = false
     var applyHighlight = true
     var highlighter = CodeHighlighter(
         reservedColor, numberColor,
@@ -85,7 +85,7 @@ class SimpleCodeEditor : ScrollView {
             this.numberColor
         )
         stringColor = a.getColor(
-            R.styleable.SimpleCodeEditor_stringColor,
+            R.styleable.SimpleCodeEditor_sce_stringColor,
             this.stringColor
         )
         annotationColor = a.getColor(
