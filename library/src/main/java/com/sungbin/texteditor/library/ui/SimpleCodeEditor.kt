@@ -113,6 +113,7 @@ class SimpleCodeEditor : ScrollView {
         edittext!!.gravity = Gravity.TOP or Gravity.START
         edittext!!.setHorizontallyScrolling(true)
         edittext!!.textSize = 14f
+        edittext!!.isEnabled = !readOnly
         edittext!!.setTextColor(Color.BLACK)
         edittext!!.typeface = Typeface.MONOSPACE
         edittext!!.viewTreeObserver.addOnDrawListener {
