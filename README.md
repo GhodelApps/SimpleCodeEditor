@@ -51,12 +51,18 @@ dependencies {
 | `sce_stringColor` | Set JavaScript Highlighter String color | `Color.argb(255, 255, 160, 0)` |
 | `sce_annotationColor` | Set JavaScript Highlighter Annotation color | `Color.argb(255, 139, 195, 74)` |
 
-## methods
+## all methods
 ```kotlin
 .editor (get EditText from SimpleCodeEditor)
 .applyHighlight = boolean
 .editor.isEnabled = boolean (true is set editor Read-Only)
+
 - undo()
 - redo()
 - findText(string: String, ignoreUpper: Boolean = false) (will return ArrayList<ArrayList<Int>>, Int ArrayList have LineNumber and Index value)
 ```
+
+### Thanks
+Thanks [DarkTornado](https://github.com/DarkTornado). (supported [JavaScript Highlighter](https://github.com/DarkTornado/AndroidCodeHighlighter))
+
+# Happy Coding :)
