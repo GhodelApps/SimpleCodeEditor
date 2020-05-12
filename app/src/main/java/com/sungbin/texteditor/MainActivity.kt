@@ -2,7 +2,6 @@ package com.sungbin.texteditor
 
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -24,6 +23,14 @@ class MainActivity : AppCompatActivity() {
                 "1234567890\n" +
                 "1234567890"
         )
-        Log.d("AAA - 9", edit.findText("TEST", true)[0][1].toString())
+
+        undo.setOnClickListener {
+            edit.undo()
+        }
+
+        redo.setOnClickListener {
+            edit.redo()
+        }
+//        Log.d("AAA - 9", edit.findText("TEST", true)[0][1].toString())
     }
 }

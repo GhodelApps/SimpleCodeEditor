@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.ScrollView
 import com.sungbin.texteditor.library.R
 import com.sungbin.texteditor.library.util.CodeHighlighter
+import com.sungbin.texteditor.library.util.EdittextHistoryManager
 import java.util.*
 import kotlin.math.log10
 
@@ -38,6 +39,8 @@ class SimpleCodeEditor : ScrollView {
         reservedColor, numberColor,
         stringColor, annotationColor
     )
+
+    private var edittextHistoryManager: EdittextHistoryManager? = null
 
     /**
      * Create a new TSimpleCodeEditor.
@@ -144,6 +147,18 @@ class SimpleCodeEditor : ScrollView {
             currentLine = edittext!!.lineCount * scrollY / getChildAt(0).height
             invalidate()
         }
+
+        edittextHistoryManager = EdittextHistoryManager(
+            edittext!!
+        )
+    }
+
+    fun undo(){
+        edittextHistoryManager!!.undo()
+    }
+
+    fun redo(){
+        edittextHistoryManager!!.redo()
     }
 
     fun findText(string: String, ignoreUpper: Boolean = false): ArrayList<ArrayList<Int>> {
