@@ -6,7 +6,6 @@ import android.text.Editable
 import android.text.Selection
 import android.text.TextWatcher
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.widget.EditText
 import android.widget.ScrollView
@@ -164,7 +163,6 @@ class SimpleCodeEditor : ScrollView {
 
     fun findText(string: String, ignoreUpper: Boolean = false): ArrayList<ArrayList<Int>> {
         val lines = edittext!!.text.split("\n")
-        Log.d("AAA - 0", edittext!!.text.split("\n").size.toString())
         val array = ArrayList<ArrayList<Int>>()
         for(i in lines.indices){
             if(ignoreUpper){
