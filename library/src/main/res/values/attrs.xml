@@ -8,7 +8,7 @@
         <attr name="sce_applyHighlighter" format="boolean" />
         <attr name="sce_reservedColor" format="color" />
         <attr name="sce_numberColor" format="color" />
-        <attr name="stringColor" format="color" />
+        <attr name="sce_stringColor" format="color" />
         <attr name="sce_annotationColor" format="color" />
     </declare-styleable>
 </resources>
