@@ -63,6 +63,14 @@ dependencies {
 - findText(string: String, ignoreUpper: Boolean = false) (will return ArrayList<ArrayList<Int>>, Int ArrayList have LineNumber and Index value)
 ```
 
+# Gradle Error
+If you error at Gradle `More than one file was found with OS independent path 'META-INF/library_release.kotlin_module'` this, add below code at your Gradle.
+```gradle
+packagingOptions {
+    exclude 'META-INF/library_release.kotlin_module'
+}
+```
+
 # Thanks
 Thanks [DarkTornado](https://github.com/DarkTornado). (supported [JavaScript Highlighter](https://github.com/DarkTornado/AndroidCodeHighlighter))
 
