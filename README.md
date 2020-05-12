@@ -62,7 +62,7 @@ dependencies {
 - findText(string: String, ignoreUpper: Boolean = false) (will return ArrayList<ArrayList<Int>>, Int ArrayList have LineNumber and Index value)
 ```
 
-### Thanks
+# Thanks
 Thanks [DarkTornado](https://github.com/DarkTornado). (supported [JavaScript Highlighter](https://github.com/DarkTornado/AndroidCodeHighlighter))
 
 # Happy Coding :)
