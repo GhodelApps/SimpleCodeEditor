@@ -74,7 +74,7 @@ android {
 ```
 
 # License
-You can see License at [this page](https://github.com/sungbin5304/SimpleCodeEditor/blob/master/LICENSE).
+License is under the [Apache2](https://github.com/sungbin5304/SimpleCodeEditor/blob/master/LICENSE).
 
 # Thanks
 Thanks [DarkTornado](https://github.com/DarkTornado). (supported [JavaScript Highlighter](https://github.com/DarkTornado/AndroidCodeHighlighter))
