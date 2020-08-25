@@ -4,7 +4,7 @@
   <a href="https://github.com/sungbin5304/SimpleCodeEditor/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-Apache2-blue"/></a>
   <a href="https://jitpack.io/#sungbin5304/SimpleCodeEditor"><img alt="Download" src="https://jitpack.io/v/sungbin5304/SimpleCodeEditor.svg"/></a>
   <a href="https://github.com/sungbin5304/SimpleCodeEditor"><img alt="Title" src="https://img.shields.io/badge/Simple-EIDTOR-ff69b4"/></a>
-  <a href="https://github.com/sungbin5304/SimpleCodeEditor"><img alt="Highlight" src="https://img.shields.io/badge/Highlight-JS-yellow"/></a>
+  <a href="https://github.com/sungbin5304/SimpleCodeEditor"><img alt="Highlight" src="https://img.shields.io/badge/Highlighter-JS-yellow"/></a>
 </p><br>
 
 <p align="center">
@@ -29,42 +29,53 @@ dependencies {
 # Usage
 ## xml
 ```xml
-<com.sungbin.texteditor.library.ui.SimpleCodeEditor
+<com.sungbin.texteditor.library.SimpleCodeEditor
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/edit"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:sce_lineNumberColor="@color/colorPrimaryDark"
-        app:sce_lineColor="@color/colorPrimaryDark"
-        app:sce_selectLineColor="@color/colorPrimaryDark"/>
+        android:layout_height="match_parent"/>
 ```
 
 ## all attribute
-| Attribute | Description| Default |
-| ------------- | ------------- | ------------- |
-| `sce_lineColor` | Set line color | `Color.GRAY` |
-| `tsce_lineNumberColor` | Set line number color | `Color.GRAY` |
-| `sce_selectLineColor` | set focused line background color | `Color.CYAN` |
-| `sce_applyHighlighter` | Set JavaScript Highlighter (It may cause freezing for long string) | `true` |
-| `sce_readOnly` | Set editor read-only | `false` |
-| `sce_reservedColor` | Set JavaScript Highlighter Reserved word color | `Color.argb(255, 21, 101, 192)` |
-| `sce_numberColort` | Set JavaScript Highlighter Number color | `Color.argb(255, 191, 54, 12)` |
-| `sce_stringColor` | Set JavaScript Highlighter String color | `Color.argb(255, 255, 160, 0)` |
-| `sce_annotationColor` | Set JavaScript Highlighter Annotation color | `Color.argb(255, 139, 195, 74)` |
+|Attribute|Descriptionn|Default|Type|
+|------------|-------------|-------------| -------------| 
+|`sce_lineColor`|Set line color|`lineNumberColor` value (= `Color.BLACK`)|`Color`|
+|`sce_lineNumberColor`|Set line number color|`Color.BLACK`|`Color`|
+|`sce_lineNumberTextSize`|Set line number text size|13|`Integer`|
+|`sce_focusLineColor`|Set focused line background color|`Color.CYAN`|`Color`|
+|`sce_applyHighlighter`|Set JavaScript Highlighter (It may cause freezing for long string)|`true`|`Boolean`|
+|`sce_reservedColor`|Set JavaScript Highlighter Reserved word color|`Color.argb(255, 21, 101, 192)`|`Color`|
+|`sce_numberColort`|Set JavaScript Highlighter Number color|`Color.argb(255, 191, 54, 12)`|`Color`|
+|`sce_stringColor`|Set JavaScript Highlighter String color|`Color.argb(255, 255, 160, 0)`|`Color`|
+|`sce_annotationColor`|Set JavaScript Highlighter Annotation color|`Color.argb(255, 139, 195, 74)`|`Color`|
+|`sce_enableHorizontallyScroll`|Set editor can HorizontallyScrolling|`false`|`Boolean`|`
+
 
 ## all methods
 ```kotlin
-.editor (get EditText from SimpleCodeEditor)
-.applyHighlight = boolean
-.editor.isEnabled = boolean (true is set editor Read-Only)
+applyHighlight = boolean
 
-- undo()
-- redo()
-- findText(string: String, ignoreUpper: Boolean = false) (will return ArrayList<ArrayList<Int>>, Int ArrayList have LineNumber and Index value)
+undo()
+redo()
+findText(string: String, ignoreUpper: Boolean = false) (will return ArrayList<ArrayList<Int>>, Int ArrayList have LineNumber and Index value)
+```
+
+# Gradle Setting
+You should add this code at Gradle file.
+```gradle
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+}
 ```
 
 # Gradle Error
-If you error at gradle `More than one file was found with OS independent path 'META-INF/library_release.kotlin_module'` this, add below code at your gradle.
+If you error at Gradle `More than one file was found with OS independent path 'META-INF/library_release.kotlin_module'` this, add this code at your Gradle.
 ```gradle
 android {
   packagingOptions {
