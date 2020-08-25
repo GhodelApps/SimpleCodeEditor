@@ -60,7 +60,7 @@ findText(string: String, ignoreUpper: Boolean = false) (will return ArrayList<Ar
 ```
 
 # Gradle Setting
-You should set gradle file like below code.
+You should add this code at Gradle file.
 ```gradle
 android {
     compileOptions {
@@ -75,7 +75,7 @@ android {
 ```
 
 # Gradle Error
-If you error at gradle `More than one file was found with OS independent path 'META-INF/library_release.kotlin_module'` this, add below code at your gradle.
+If you error at Gradle `More than one file was found with OS independent path 'META-INF/library_release.kotlin_module'` this, add below code at your gradle.
 ```gradle
 android {
   packagingOptions {
