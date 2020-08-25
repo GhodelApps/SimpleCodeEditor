@@ -156,8 +156,7 @@ class JavaScriptEditor : AppCompatEditText {
                     )
                     line++
                 }
-            }
-            else {
+            } else {
                 canvas.drawText(
                     "${getSpace(spaceCount)}$i",
                     rect.left + dp * 4.toFloat(),
