@@ -52,7 +52,10 @@ class CodeHighlighter(
             "prototype",
             "this",
             "super",
-            "default"
+            "default",
+            "java",
+            "io",
+            "Jsoup"
         )
         for (n in reservedColorData.indices) {
             data.add(
@@ -106,172 +109,36 @@ class CodeHighlighter(
 
     fun apply(editable: Editable) {
         Thread {
-            val string = editable.toString()
-            if (string.isEmpty()) return@Thread
-            val spans =
-                editable.getSpans(0, editable.length, ForegroundColorSpan::class.java)
-            for (n in spans.indices) {
-                editable.removeSpan(spans[n])
-            }
-            var start = 0
-            while (start >= 0) {
-                val index = string.indexOf("/*", start)
-                var end = string.indexOf("*/", index + 2)
-                if (index >= 0 && end >= 0) {
-                    editable.setSpan(
-                        ForegroundColorSpan(annotationColor),
-                        index, end + 2,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                } else {
-                    end = -5
+            try {
+                val string = editable.toString()
+                if (string.isEmpty()) return@Thread
+                val spans =
+                    editable.getSpans(0, editable.length, ForegroundColorSpan::class.java)
+                for (n in spans.indices) {
+                    editable.removeSpan(spans[n])
                 }
-                start = end + 2
-            }
-            start = 0
-            while (start >= 0) {
-                val index = string.indexOf("//", start)
-                var end = string.indexOf("\n", index + 1)
-                if (index >= 0 && end >= 0) {
-                    editable.setSpan(
-                        ForegroundColorSpan(annotationColor),
-                        index, end,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                } else {
-                    end = -1
-                }
-                start = end
-            }
-            start = 0
-            while (start >= 0) {
-                var index = string.indexOf("\"", start)
-                while (index > 0 && string[index - 1] == '\\') {
-                    index = string.indexOf("\"", index + 1)
-                }
-                var end = string.indexOf("\"", index + 1)
-                while (end > 0 && string[end - 1] == '\\') {
-                    end = string.indexOf("\"", end + 1)
-                }
-                if (index >= 0 && end >= 0) {
-                    var span = editable.getSpans(
-                        index,
-                        end + 1,
-                        ForegroundColorSpan::class.java
-                    )
-                    if (span.isNotEmpty()) {
-                        if (string.substring(index + 1, end).contains("/*") && string.substring(
-                                index + 1,
-                                end
-                            ).contains("*/")
-                        ) {
-                            for (n in span.indices) {
-                                editable.removeSpan(span[n])
-                            }
-                            editable.setSpan(
-                                ForegroundColorSpan(stringColor),
-                                index, end + 1,
-                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                            )
-                        } else if (string.substring(index + 1, end).contains("//")) {
-                            span = editable.getSpans(
-                                index,
-                                string.indexOf("\n", end),
-                                ForegroundColorSpan::class.java
-                            )
-                            for (n in span.indices) {
-                                editable.removeSpan(span[n])
-                            }
-                            editable.setSpan(
-                                ForegroundColorSpan(stringColor),
-                                index, end + 1,
-                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                            )
-                        }
-                    } else {
+                var start = 0
+                while (start >= 0) {
+                    val index = string.indexOf("/*", start)
+                    var end = string.indexOf("*/", index + 2)
+                    if (index >= 0 && end >= 0) {
                         editable.setSpan(
-                            ForegroundColorSpan(stringColor),
-                            index, end + 1,
+                            ForegroundColorSpan(annotationColor),
+                            index, end + 2,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                         )
-                    }
-                } else {
-                    end = -5
-                }
-                start = end + 1
-            }
-            start = 0
-            while (start >= 0) {
-                var index = string.indexOf("'", start)
-                while (index > 0 && string[index - 1] == '\\') {
-                    index = string.indexOf("'", index + 1)
-                }
-                var end = string.indexOf("'", index + 1)
-                while (end > 0 && string[end - 1] == '\\') {
-                    end = string.indexOf("'", end + 1)
-                }
-                if (index >= 0 && end >= 0) {
-                    var span = editable.getSpans(
-                        index,
-                        end + 1,
-                        ForegroundColorSpan::class.java
-                    )
-                    if (span.isNotEmpty()) {
-                        if (string.substring(index + 1, end).contains("/*") && string.substring(
-                                index + 1,
-                                end
-                            ).contains("*/")
-                        ) {
-                            for (n in span.indices) {
-                                editable.removeSpan(span[n])
-                            }
-                            editable.setSpan(
-                                ForegroundColorSpan(stringColor),
-                                index, end + 1,
-                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                            )
-                        } else if (string.substring(index + 1, end).contains("//")) {
-                            span = editable.getSpans(
-                                index,
-                                string.indexOf("\n", end),
-                                ForegroundColorSpan::class.java
-                            )
-                            for (n in span.indices) {
-                                editable.removeSpan(span[n])
-                            }
-                            editable.setSpan(
-                                ForegroundColorSpan(stringColor),
-                                index, end + 1,
-                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                            )
-                        }
                     } else {
-                        editable.setSpan(
-                            ForegroundColorSpan(stringColor),
-                            index, end + 1,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
+                        end = -5
                     }
-                } else {
-                    end = -5
+                    start = end + 2
                 }
-                start = end + 1
-            }
-            for (n in data.indices) {
                 start = 0
                 while (start >= 0) {
-                    val index = string.indexOf(data[n].value, start)
-                    var end = index + data[n].value.length
-                    if (index >= 0) {
-                        var color = data[n].color
-                        if (color == -1) color = reservedColor
-                        if (editable.getSpans(
-                                index,
-                                end,
-                                ForegroundColorSpan::class.java
-                            ).isEmpty() && isSeparated(string, index, end - 1)
-                        ) editable.setSpan(
-                            ForegroundColorSpan(color),
+                    val index = string.indexOf("//", start)
+                    var end = string.indexOf("\n", index + 1)
+                    if (index >= 0 && end >= 0) {
+                        editable.setSpan(
+                            ForegroundColorSpan(annotationColor),
                             index, end,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                         )
@@ -280,31 +147,170 @@ class CodeHighlighter(
                     }
                     start = end
                 }
-            }
-            val numberColorData =
-                arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".")
-            for (n in numberColorData.indices) {
                 start = 0
                 while (start >= 0) {
-                    val index = string.indexOf(numberColorData[n], start)
-                    var end = index + 1
-                    if (index >= 0) {
-                        if (editable.getSpans(
-                                index,
-                                end,
-                                ForegroundColorSpan::class.java
-                            ).isEmpty() && checkNumber(string, index)
-                        ) editable.setSpan(
-                            ForegroundColorSpan(numberColor),
-                            index, end,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                    } else {
-                        end = -1
+                    var index = string.indexOf("\"", start)
+                    while (index > 0 && string[index - 1] == '\\') {
+                        index = string.indexOf("\"", index + 1)
                     }
-                    start = end
+                    var end = string.indexOf("\"", index + 1)
+                    while (end > 0 && string[end - 1] == '\\') {
+                        end = string.indexOf("\"", end + 1)
+                    }
+                    if (index >= 0 && end >= 0) {
+                        var span = editable.getSpans(
+                            index,
+                            end + 1,
+                            ForegroundColorSpan::class.java
+                        )
+                        if (span.isNotEmpty()) {
+                            if (string.substring(index + 1, end).contains("/*") && string.substring(
+                                    index + 1,
+                                    end
+                                ).contains("*/")
+                            ) {
+                                for (n in span.indices) {
+                                    editable.removeSpan(span[n])
+                                }
+                                editable.setSpan(
+                                    ForegroundColorSpan(stringColor),
+                                    index, end + 1,
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+                            } else if (string.substring(index + 1, end).contains("//")) {
+                                span = editable.getSpans(
+                                    index,
+                                    string.indexOf("\n", end),
+                                    ForegroundColorSpan::class.java
+                                )
+                                for (n in span.indices) {
+                                    editable.removeSpan(span[n])
+                                }
+                                editable.setSpan(
+                                    ForegroundColorSpan(stringColor),
+                                    index, end + 1,
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+                            }
+                        } else {
+                            editable.setSpan(
+                                ForegroundColorSpan(stringColor),
+                                index, end + 1,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        }
+                    } else {
+                        end = -5
+                    }
+                    start = end + 1
+                }
+                start = 0
+                while (start >= 0) {
+                    var index = string.indexOf("'", start)
+                    while (index > 0 && string[index - 1] == '\\') {
+                        index = string.indexOf("'", index + 1)
+                    }
+                    var end = string.indexOf("'", index + 1)
+                    while (end > 0 && string[end - 1] == '\\') {
+                        end = string.indexOf("'", end + 1)
+                    }
+                    if (index >= 0 && end >= 0) {
+                        var span = editable.getSpans(
+                            index,
+                            end + 1,
+                            ForegroundColorSpan::class.java
+                        )
+                        if (span.isNotEmpty()) {
+                            if (string.substring(index + 1, end).contains("/*") && string.substring(
+                                    index + 1,
+                                    end
+                                ).contains("*/")
+                            ) {
+                                for (n in span.indices) {
+                                    editable.removeSpan(span[n])
+                                }
+                                editable.setSpan(
+                                    ForegroundColorSpan(stringColor),
+                                    index, end + 1,
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+                            } else if (string.substring(index + 1, end).contains("//")) {
+                                span = editable.getSpans(
+                                    index,
+                                    string.indexOf("\n", end),
+                                    ForegroundColorSpan::class.java
+                                )
+                                for (n in span.indices) {
+                                    editable.removeSpan(span[n])
+                                }
+                                editable.setSpan(
+                                    ForegroundColorSpan(stringColor),
+                                    index, end + 1,
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+                            }
+                        } else {
+                            editable.setSpan(
+                                ForegroundColorSpan(stringColor),
+                                index, end + 1,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        }
+                    } else {
+                        end = -5
+                    }
+                    start = end + 1
+                }
+                for (n in data.indices) {
+                    start = 0
+                    while (start >= 0) {
+                        val index = string.indexOf(data[n].value, start)
+                        var end = index + data[n].value.length
+                        if (index >= 0) {
+                            var color = data[n].color
+                            if (color == -1) color = reservedColor
+                            if (editable.getSpans(
+                                    index,
+                                    end,
+                                    ForegroundColorSpan::class.java
+                                ).isEmpty() && isSeparated(string, index, end - 1)
+                            ) editable.setSpan(
+                                ForegroundColorSpan(color),
+                                index, end,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        } else {
+                            end = -1
+                        }
+                        start = end
+                    }
+                }
+                val numberColorData =
+                    arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".")
+                for (n in numberColorData.indices) {
+                    start = 0
+                    while (start >= 0) {
+                        val index = string.indexOf(numberColorData[n], start)
+                        var end = index + 1
+                        if (index >= 0) {
+                            if (editable.getSpans(
+                                    index,
+                                    end,
+                                    ForegroundColorSpan::class.java
+                                ).isEmpty() && checkNumber(string, index)
+                            ) editable.setSpan(
+                                ForegroundColorSpan(numberColor),
+                                index, end,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        } else {
+                            end = -1
+                        }
+                        start = end
+                    }
                 }
             }
+            catch (ignored: Exception) {}
         }.start()
     }
 
