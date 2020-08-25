@@ -21,7 +21,7 @@ class SimpleCodeEditor : AppCompatEditText {
     private var linePaint = Paint()
     private var highlightPaint = Paint()
     private var applyHighlight = true
-    private var enableHorizontallyScroll = true
+    private var enableHorizontallyScroll = false
     private lateinit var historyManager: EdittextHistoryManager
 
     private var reservedColor = Color.argb(255, 21, 101, 192)
