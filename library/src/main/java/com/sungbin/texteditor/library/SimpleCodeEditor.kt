@@ -13,7 +13,7 @@ import java.util.*
 import kotlin.math.log10
 import kotlin.properties.Delegates
 
-class JavaScriptEditor : AppCompatEditText {
+class SimpleCodeEditor : AppCompatEditText {
     private var dp by Delegates.notNull<Int>()
     private var rect = Rect()
     private var lineRect = Rect()
@@ -39,7 +39,7 @@ class JavaScriptEditor : AppCompatEditText {
      * @param context current activity
      */
     constructor(context: Context) : super(context) {
-        JavaScriptEditor(context, null)
+        SimpleCodeEditor(context, null)
     }
 
     /**
@@ -53,48 +53,48 @@ class JavaScriptEditor : AppCompatEditText {
     ) : super(context, attrs) {
         val attr = context.obtainStyledAttributes(
             attrs,
-            R.styleable.JavaScriptEditor,
+            R.styleable.SimpleCodeEditor,
             0,
             0
         )
         val lineNumberColor = attr.getColor(
-            R.styleable.JavaScriptEditor_jse_lineNumberColor,
+            R.styleable.SimpleCodeEditor_sce_lineNumberColor,
             Color.BLACK
         )
         val lineColor = attr.getColor(
-            R.styleable.JavaScriptEditor_jse_lineNumberColor,
+            R.styleable.SimpleCodeEditor_sce_lineNumberColor,
             lineNumberColor
         )
         val lineTextSize = attr.getInt(
-            R.styleable.JavaScriptEditor_jse_lineNumberTextSize,
+            R.styleable.SimpleCodeEditor_sce_lineNumberTextSize,
             13
         )
         val selectLineColor = attr.getColor(
-            R.styleable.JavaScriptEditor_jse_focusLineColor,
+            R.styleable.SimpleCodeEditor_sce_focusLineColor,
             Color.CYAN
         )
         reservedColor = attr.getColor(
-            R.styleable.JavaScriptEditor_jse_reservedColor,
+            R.styleable.SimpleCodeEditor_sce_reservedColor,
             this.reservedColor
         )
         numberColor = attr.getColor(
-            R.styleable.JavaScriptEditor_jse_numberColor,
+            R.styleable.SimpleCodeEditor_sce_numberColor,
             this.numberColor
         )
         stringColor = attr.getColor(
-            R.styleable.JavaScriptEditor_jse_stringColor,
+            R.styleable.SimpleCodeEditor_sce_stringColor,
             this.stringColor
         )
         enableHorizontallyScroll = attr.getBoolean(
-            R.styleable.JavaScriptEditor_jse_enableHorizontallyScroll,
+            R.styleable.SimpleCodeEditor_sce_enableHorizontallyScroll,
             this.enableHorizontallyScroll
         )
         annotationColor = attr.getColor(
-            R.styleable.JavaScriptEditor_jse_annotationColor,
+            R.styleable.SimpleCodeEditor_sce_annotationColor,
             this.annotationColor
         )
         applyHighlight = attr.getBoolean(
-            R.styleable.JavaScriptEditor_jse_applyHighlighter,
+            R.styleable.SimpleCodeEditor_sce_applyHighlighter,
             this.applyHighlight
         )
         highlighter = CodeHighlighter(
