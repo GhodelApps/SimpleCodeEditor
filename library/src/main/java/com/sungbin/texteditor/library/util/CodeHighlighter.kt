@@ -6,12 +6,15 @@ import android.text.style.ForegroundColorSpan
 import java.util.*
 
 @Suppress("NAME_SHADOWING")
-class CodeHighlighter (private var reservedColor: Int,
-                       private var numberColor: Int,
-                       private var stringColor: Int,
-                       private var annotationColor: Int){
+class CodeHighlighter(
+    private var reservedColor: Int,
+    private var numberColor: Int,
+    private var stringColor: Int,
+    private var annotationColor: Int
+) {
 
     private val data = ArrayList<Highlighter>()
+
     private inner class Highlighter(var value: String, var color: Int)
 
     init {
@@ -102,172 +105,36 @@ class CodeHighlighter (private var reservedColor: Int,
     }
 
     fun apply(s: Editable) {
-        val str = s.toString()
-        if (str.isEmpty()) return
-        val spans =
-            s.getSpans(0, s.length, ForegroundColorSpan::class.java)
-        for (n in spans.indices) {
-            s.removeSpan(spans[n])
-        }
-        var start = 0
-        while (start >= 0) {
-            val index = str.indexOf("/*", start)
-            var end = str.indexOf("*/", index + 2)
-            if (index >= 0 && end >= 0) {
-                s.setSpan(
-                    ForegroundColorSpan(annotationColor),
-                    index, end + 2,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            } else {
-                end = -5
+        Thread {
+            val str = s.toString()
+            if (str.isEmpty()) return@Thread
+            val spans =
+                s.getSpans(0, s.length, ForegroundColorSpan::class.java)
+            for (n in spans.indices) {
+                s.removeSpan(spans[n])
             }
-            start = end + 2
-        }
-        start = 0
-        while (start >= 0) {
-            val index = str.indexOf("//", start)
-            var end = str.indexOf("\n", index + 1)
-            if (index >= 0 && end >= 0) {
-                s.setSpan(
-                    ForegroundColorSpan(annotationColor),
-                    index, end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            } else {
-                end = -1
-            }
-            start = end
-        }
-        start = 0
-        while (start >= 0) {
-            var index = str.indexOf("\"", start)
-            while (index > 0 && str[index - 1] == '\\') {
-                index = str.indexOf("\"", index + 1)
-            }
-            var end = str.indexOf("\"", index + 1)
-            while (end > 0 && str[end - 1] == '\\') {
-                end = str.indexOf("\"", end + 1)
-            }
-            if (index >= 0 && end >= 0) {
-                var span = s.getSpans(
-                    index,
-                    end + 1,
-                    ForegroundColorSpan::class.java
-                )
-                if (span.isNotEmpty()) {
-                    if (str.substring(index + 1, end).contains("/*") && str.substring(
-                            index + 1,
-                            end
-                        ).contains("*/")
-                    ) {
-                        for (n in span.indices) {
-                            s.removeSpan(span[n])
-                        }
-                        s.setSpan(
-                            ForegroundColorSpan(stringColor),
-                            index, end + 1,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                    } else if (str.substring(index + 1, end).contains("//")) {
-                        span = s.getSpans(
-                            index,
-                            str.indexOf("\n", end),
-                            ForegroundColorSpan::class.java
-                        )
-                        for (n in span.indices) {
-                            s.removeSpan(span[n])
-                        }
-                        s.setSpan(
-                            ForegroundColorSpan(stringColor),
-                            index, end + 1,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                    }
-                } else {
+            var start = 0
+            while (start >= 0) {
+                val index = str.indexOf("/*", start)
+                var end = str.indexOf("*/", index + 2)
+                if (index >= 0 && end >= 0) {
                     s.setSpan(
-                        ForegroundColorSpan(stringColor),
-                        index, end + 1,
+                        ForegroundColorSpan(annotationColor),
+                        index, end + 2,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                     )
-                }
-            } else {
-                end = -5
-            }
-            start = end + 1
-        }
-        start = 0
-        while (start >= 0) {
-            var index = str.indexOf("'", start)
-            while (index > 0 && str[index - 1] == '\\') {
-                index = str.indexOf("'", index + 1)
-            }
-            var end = str.indexOf("'", index + 1)
-            while (end > 0 && str[end - 1] == '\\') {
-                end = str.indexOf("'", end + 1)
-            }
-            if (index >= 0 && end >= 0) {
-                var span = s.getSpans(
-                    index,
-                    end + 1,
-                    ForegroundColorSpan::class.java
-                )
-                if (span.size > 0) {
-                    if (str.substring(index + 1, end).contains("/*") && str.substring(
-                            index + 1,
-                            end
-                        ).contains("*/")
-                    ) {
-                        for (n in span.indices) {
-                            s.removeSpan(span[n])
-                        }
-                        s.setSpan(
-                            ForegroundColorSpan(stringColor),
-                            index, end + 1,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                    } else if (str.substring(index + 1, end).contains("//")) {
-                        span = s.getSpans(
-                            index,
-                            str.indexOf("\n", end),
-                            ForegroundColorSpan::class.java
-                        )
-                        for (n in span.indices) {
-                            s.removeSpan(span[n])
-                        }
-                        s.setSpan(
-                            ForegroundColorSpan(stringColor),
-                            index, end + 1,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                    }
                 } else {
-                    s.setSpan(
-                        ForegroundColorSpan(stringColor),
-                        index, end + 1,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
+                    end = -5
                 }
-            } else {
-                end = -5
+                start = end + 2
             }
-            start = end + 1
-        }
-        for (n in data.indices) {
             start = 0
             while (start >= 0) {
-                val index = str.indexOf(data[n].value, start)
-                var end = index + data[n].value.length
-                if (index >= 0) {
-                    var color = data[n].color
-                    if (color == -1) color = reservedColor
-                    if (s.getSpans(
-                            index,
-                            end,
-                            ForegroundColorSpan::class.java
-                        ).isEmpty() && isSeparated(str, index, end - 1)
-                    ) s.setSpan(
-                        ForegroundColorSpan(color),
+                val index = str.indexOf("//", start)
+                var end = str.indexOf("\n", index + 1)
+                if (index >= 0 && end >= 0) {
+                    s.setSpan(
+                        ForegroundColorSpan(annotationColor),
                         index, end,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                     )
@@ -276,31 +143,169 @@ class CodeHighlighter (private var reservedColor: Int,
                 }
                 start = end
             }
-        }
-        val numberColorData =
-            arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".")
-        for (n in numberColorData.indices) {
             start = 0
             while (start >= 0) {
-                val index = str.indexOf(numberColorData[n], start)
-                var end = index + 1
-                if (index >= 0) {
-                    if (s.getSpans(
-                            index,
-                            end,
-                            ForegroundColorSpan::class.java
-                        ).isEmpty() && checkNumber(str, index)
-                    ) s.setSpan(
-                        ForegroundColorSpan(numberColor),
-                        index, end,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                } else {
-                    end = -1
+                var index = str.indexOf("\"", start)
+                while (index > 0 && str[index - 1] == '\\') {
+                    index = str.indexOf("\"", index + 1)
                 }
-                start = end
+                var end = str.indexOf("\"", index + 1)
+                while (end > 0 && str[end - 1] == '\\') {
+                    end = str.indexOf("\"", end + 1)
+                }
+                if (index >= 0 && end >= 0) {
+                    var span = s.getSpans(
+                        index,
+                        end + 1,
+                        ForegroundColorSpan::class.java
+                    )
+                    if (span.isNotEmpty()) {
+                        if (str.substring(index + 1, end).contains("/*") && str.substring(
+                                index + 1,
+                                end
+                            ).contains("*/")
+                        ) {
+                            for (n in span.indices) {
+                                s.removeSpan(span[n])
+                            }
+                            s.setSpan(
+                                ForegroundColorSpan(stringColor),
+                                index, end + 1,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        } else if (str.substring(index + 1, end).contains("//")) {
+                            span = s.getSpans(
+                                index,
+                                str.indexOf("\n", end),
+                                ForegroundColorSpan::class.java
+                            )
+                            for (n in span.indices) {
+                                s.removeSpan(span[n])
+                            }
+                            s.setSpan(
+                                ForegroundColorSpan(stringColor),
+                                index, end + 1,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        }
+                    } else {
+                        s.setSpan(
+                            ForegroundColorSpan(stringColor),
+                            index, end + 1,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
+                } else {
+                    end = -5
+                }
+                start = end + 1
             }
-        }
+            start = 0
+            while (start >= 0) {
+                var index = str.indexOf("'", start)
+                while (index > 0 && str[index - 1] == '\\') {
+                    index = str.indexOf("'", index + 1)
+                }
+                var end = str.indexOf("'", index + 1)
+                while (end > 0 && str[end - 1] == '\\') {
+                    end = str.indexOf("'", end + 1)
+                }
+                if (index >= 0 && end >= 0) {
+                    var span = s.getSpans(
+                        index,
+                        end + 1,
+                        ForegroundColorSpan::class.java
+                    )
+                    if (span.isNotEmpty()) {
+                        if (str.substring(index + 1, end).contains("/*") && str.substring(
+                                index + 1,
+                                end
+                            ).contains("*/")
+                        ) {
+                            for (n in span.indices) {
+                                s.removeSpan(span[n])
+                            }
+                            s.setSpan(
+                                ForegroundColorSpan(stringColor),
+                                index, end + 1,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        } else if (str.substring(index + 1, end).contains("//")) {
+                            span = s.getSpans(
+                                index,
+                                str.indexOf("\n", end),
+                                ForegroundColorSpan::class.java
+                            )
+                            for (n in span.indices) {
+                                s.removeSpan(span[n])
+                            }
+                            s.setSpan(
+                                ForegroundColorSpan(stringColor),
+                                index, end + 1,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        }
+                    } else {
+                        s.setSpan(
+                            ForegroundColorSpan(stringColor),
+                            index, end + 1,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
+                } else {
+                    end = -5
+                }
+                start = end + 1
+            }
+            for (n in data.indices) {
+                start = 0
+                while (start >= 0) {
+                    val index = str.indexOf(data[n].value, start)
+                    var end = index + data[n].value.length
+                    if (index >= 0) {
+                        var color = data[n].color
+                        if (color == -1) color = reservedColor
+                        if (s.getSpans(
+                                index,
+                                end,
+                                ForegroundColorSpan::class.java
+                            ).isEmpty() && isSeparated(str, index, end - 1)
+                        ) s.setSpan(
+                            ForegroundColorSpan(color),
+                            index, end,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    } else {
+                        end = -1
+                    }
+                    start = end
+                }
+            }
+            val numberColorData =
+                arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".")
+            for (n in numberColorData.indices) {
+                start = 0
+                while (start >= 0) {
+                    val index = str.indexOf(numberColorData[n], start)
+                    var end = index + 1
+                    if (index >= 0) {
+                        if (s.getSpans(
+                                index,
+                                end,
+                                ForegroundColorSpan::class.java
+                            ).isEmpty() && checkNumber(str, index)
+                        ) s.setSpan(
+                            ForegroundColorSpan(numberColor),
+                            index, end,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    } else {
+                        end = -1
+                    }
+                    start = end
+                }
+            }
+        }.start()
     }
 
     private fun checkNumber(str: String, index: Int): Boolean {

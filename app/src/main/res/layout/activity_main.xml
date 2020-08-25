@@ -5,11 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.sungbin.texteditor.library.ui.SimpleCodeEditor
+    <com.sungbin.texteditor.library.JavaScriptEditor
         android:id="@+id/edit"
         android:text="@string/app_name"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:sce_lineNumberTextSize="15"
         app:sce_enableHorizontallyScroll="false"/>
 
 </LinearLayout>

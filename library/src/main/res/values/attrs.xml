@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="SimpleCodeEditor">
-        <attr name="sce_lineColor" format="color" />
-        <attr name="sce_lineNumberColor" format="color" />
-        <attr name="sce_selectLineColor" format="color" />
-        <attr name="sce_applyHighlighter" format="boolean" />
-        <attr name="sce_reservedColor" format="color" />
-        <attr name="sce_numberColor" format="color" />
-        <attr name="sce_stringColor" format="color" />
-        <attr name="sce_annotationColor" format="color" />
-        <attr name="sce_enableHorizontallyScroll" format="boolean" />
+    <declare-styleable name="JavaScriptEditor">
+        <attr name="jse_lineColor" format="color" />
+        <attr name="jse_lineNumberColor" format="color" />
+        <attr name="jse_lineNumberTextSize" format="integer" />
+        <attr name="jse_focusLineColor" format="color" />
+        <attr name="jse_applyHighlighter" format="boolean" />
+        <attr name="jse_reservedColor" format="color" />
+        <attr name="jse_numberColor" format="color" />
+        <attr name="jse_stringColor" format="color" />
+        <attr name="jse_annotationColor" format="color" />
+        <attr name="jse_enableHorizontallyScroll" format="boolean" />
     </declare-styleable>
 </resources>

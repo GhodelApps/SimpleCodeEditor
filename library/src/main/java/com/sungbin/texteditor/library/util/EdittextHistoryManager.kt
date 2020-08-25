@@ -13,12 +13,12 @@ import java.util.*
  * Created by SungBin on 2020-05-12.
  */
 
-class EdittextHistoryManager (private val textView: TextView) {
+class EdittextHistoryManager (private val view: TextView) {
     private var mIsUndoOrRedo = false
     private val mEditHistory: EditHistory
     private val mChangeListener: EditTextChangeListener
     fun disconnect() {
-        textView.removeTextChangedListener(mChangeListener)
+        view.removeTextChangedListener(mChangeListener)
     }
 
     fun setMaxHistorySize(maxHistorySize: Int) {
@@ -34,7 +34,7 @@ class EdittextHistoryManager (private val textView: TextView) {
 
     fun undo() {
         val edit: EditItem = mEditHistory.previous ?: return
-        val text = textView.editableText
+        val text = view.editableText
         val start = edit.mmStart
         val end = start + if (edit.mmAfter != null) edit.mmAfter.length else 0
         mIsUndoOrRedo = true
@@ -58,7 +58,7 @@ class EdittextHistoryManager (private val textView: TextView) {
 
     fun redo() {
         val edit: EditItem = mEditHistory.next ?: return
-        val text = textView.editableText
+        val text = view.editableText
         val start = edit.mmStart
         val end = start + if (edit.mmBefore != null) edit.mmBefore.length else 0
         mIsUndoOrRedo = true
@@ -78,7 +78,7 @@ class EdittextHistoryManager (private val textView: TextView) {
     }
 
     fun storePersistentState(editor: SharedPreferences.Editor, prefix: String) {
-        editor.putString("$prefix.hash", textView.text.toString().hashCode().toString())
+        editor.putString("$prefix.hash", view.text.toString().hashCode().toString())
         editor.putInt("$prefix.maxSize", mEditHistory.mmMaxHistorySize)
         editor.putInt("$prefix.position", mEditHistory.mmPosition)
         editor.putInt("$prefix.size", mEditHistory.mmHistory.size)
@@ -105,7 +105,7 @@ class EdittextHistoryManager (private val textView: TextView) {
     ): Boolean {
         val hash = sp.getString("$prefix.hash", null)
             ?: return true
-        if (Integer.valueOf(hash) != textView.text.toString().hashCode()) {
+        if (Integer.valueOf(hash) != view.text.toString().hashCode()) {
             return false
         }
         mEditHistory.clear()
@@ -221,6 +221,6 @@ class EdittextHistoryManager (private val textView: TextView) {
     init {
         mEditHistory = EditHistory()
         mChangeListener = EditTextChangeListener()
-        textView.addTextChangedListener(mChangeListener)
+        view.addTextChangedListener(mChangeListener)
     }
 }
