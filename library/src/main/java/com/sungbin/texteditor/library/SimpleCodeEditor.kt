@@ -104,7 +104,6 @@ class SimpleCodeEditor : AppCompatEditText {
         attr.recycle()
 
         dp = context.resources.displayMetrics.density.toInt()
-        background = null
         gravity = Gravity.TOP or Gravity.START
         setHorizontallyScrolling(enableHorizontallyScroll)
         textSize = 14f
