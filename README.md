@@ -75,7 +75,7 @@ android {
 ```
 
 # Gradle Error
-If you error at Gradle `More than one file was found with OS independent path 'META-INF/library_release.kotlin_module'` this, add below code at your gradle.
+If you error at Gradle `More than one file was found with OS independent path 'META-INF/library_release.kotlin_module'` this, add this code at your Gradle.
 ```gradle
 android {
   packagingOptions {
