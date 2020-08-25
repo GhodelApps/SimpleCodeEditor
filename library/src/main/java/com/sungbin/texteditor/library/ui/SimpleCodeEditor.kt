@@ -2,44 +2,42 @@ package com.sungbin.texteditor.library.ui
 
 import android.content.Context
 import android.graphics.*
-import android.text.Editable
 import android.text.Selection
-import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.Gravity
-import android.widget.EditText
-import android.widget.ScrollView
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.widget.doAfterTextChanged
 import com.sungbin.texteditor.library.R
 import com.sungbin.texteditor.library.util.CodeHighlighter
 import com.sungbin.texteditor.library.util.EdittextHistoryManager
 import java.util.*
 import kotlin.math.log10
+import kotlin.properties.Delegates
 
-class SimpleCodeEditor : ScrollView {
-    private var dp: Int? = null
-    private var rect: Rect? = null
-    private var lineRect: Rect? = null
-    private var lineNumberPaint: Paint? = null
-    private var linePaint: Paint? = null
-    private var highlightPaint: Paint? = null
+class SimpleCodeEditor : AppCompatEditText {
+    private var dp by Delegates.notNull<Int>()
+    private var rect = Rect()
+    private var lineRect = Rect()
+    private var lineNumberPaint = Paint()
+    private var linePaint = Paint()
+    private var highlightPaint = Paint()
     private var currentLine = 0
     private var lineColor = Color.GRAY
     private var lineNumberColor = Color.GRAY
     private var selectLineColor = Color.CYAN
-    private var edittext: EditText? = null
+    private var applyHighlight = true
+    private var enableHorizontallyScroll = true
+    private lateinit var historyManager: EdittextHistoryManager
+
     private var reservedColor = Color.argb(255, 21, 101, 192)
     private var numberColor = Color.argb(255, 191, 54, 12)
     private var stringColor = Color.argb(255, 255, 160, 0)
     private var annotationColor = Color.argb(255, 139, 195, 74)
 
-    private var readOnly = false
-    var applyHighlight = true
-    var highlighter = CodeHighlighter(
+    private var highlighter = CodeHighlighter(
         reservedColor, numberColor,
         stringColor, annotationColor
     )
-
-    private var edittextHistoryManager: EdittextHistoryManager? = null
 
     /**
      * Create a new TSimpleCodeEditor.
@@ -55,47 +53,48 @@ class SimpleCodeEditor : ScrollView {
      * @param attrs provided by layout
      */
     constructor(
-        context: Context?,
+        context: Context,
         attrs: AttributeSet?
-    ) : super(context, attrs){
-        val a = context!!.obtainStyledAttributes(attrs,
+    ) : super(context, attrs) {
+        val attr = context.obtainStyledAttributes(
+            attrs,
             R.styleable.SimpleCodeEditor,
             0,
             0
         )
-        lineColor =  a.getColor(
+        lineColor = attr.getColor(
             R.styleable.SimpleCodeEditor_sce_lineNumberColor,
             this.lineColor
         )
-        lineNumberColor = a.getColor(
+        lineNumberColor = attr.getColor(
             R.styleable.SimpleCodeEditor_sce_lineNumberColor,
             this.lineNumberColor
         )
-        selectLineColor = a.getColor(
+        selectLineColor = attr.getColor(
             R.styleable.SimpleCodeEditor_sce_selectLineColor,
             this.selectLineColor
         )
-        reservedColor = a.getColor(
+        reservedColor = attr.getColor(
             R.styleable.SimpleCodeEditor_sce_reservedColor,
             this.reservedColor
         )
-        numberColor = a.getColor(
+        numberColor = attr.getColor(
             R.styleable.SimpleCodeEditor_sce_numberColor,
             this.numberColor
         )
-        stringColor = a.getColor(
+        stringColor = attr.getColor(
             R.styleable.SimpleCodeEditor_sce_stringColor,
             this.stringColor
         )
-        annotationColor = a.getColor(
+        enableHorizontallyScroll = attr.getBoolean(
+            R.styleable.SimpleCodeEditor_sce_enableHorizontallyScroll,
+            this.enableHorizontallyScroll
+        )
+        annotationColor = attr.getColor(
             R.styleable.SimpleCodeEditor_sce_annotationColor,
             this.annotationColor
         )
-        readOnly = a.getBoolean(
-            R.styleable.SimpleCodeEditor_sce_readOnly,
-            this.readOnly
-        )
-        applyHighlight = a.getBoolean(
+        applyHighlight = attr.getBoolean(
             R.styleable.SimpleCodeEditor_sce_applyHighlighter,
             this.applyHighlight
         )
@@ -103,85 +102,107 @@ class SimpleCodeEditor : ScrollView {
             reservedColor, numberColor,
             stringColor, annotationColor
         )
-        a.recycle()
+        attr.recycle()
 
-        isFillViewport = true
         dp = context.resources.displayMetrics.density.toInt()
-        edittext = EditText(context)
-        edittext!!.background = null
-        edittext!!.gravity = Gravity.TOP or Gravity.START
-        edittext!!.setHorizontallyScrolling(true)
-        edittext!!.textSize = 14f
-        edittext!!.isEnabled = !readOnly
-        edittext!!.setTextColor(Color.BLACK)
-        edittext!!.typeface = Typeface.MONOSPACE
-        edittext!!.viewTreeObserver.addOnDrawListener {
-            invalidate()
+        background = null
+        gravity = Gravity.TOP or Gravity.START
+        setHorizontallyScrolling(enableHorizontallyScroll)
+        textSize = 14f
+        setTextColor(Color.BLACK)
+        doAfterTextChanged {
+            if (applyHighlight) highlighter.apply(it!!)
         }
-        edittext!!.addTextChangedListener(object : TextWatcher{
-            override fun afterTextChanged(edittable: Editable?) {
-                if(applyHighlight) highlighter.apply(edittable!!)
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-        })
-        addView(edittext!!)
-
-        rect = Rect()
-        lineRect = Rect()
-        lineNumberPaint = Paint()
-        lineNumberPaint!!.textSize = dp!! * 10.toFloat()
-        lineNumberPaint!!.color = lineNumberColor
-        lineNumberPaint!!.typeface = Typeface.MONOSPACE
-        linePaint = Paint()
-        linePaint!!.color = lineColor
-        highlightPaint = Paint()
-        highlightPaint!!.color = selectLineColor
-        highlightPaint!!.alpha = 64
+        lineNumberPaint.apply {
+            textSize = dp * 10.toFloat()
+            color = lineNumberColor
+            typeface = Typeface.MONOSPACE
+        }
+        linePaint.color = lineColor
+        highlightPaint.apply {
+            color = selectLineColor
+            alpha = 64
+        }
         viewTreeObserver.addOnScrollChangedListener {
-            currentLine = edittext!!.lineCount * scrollY / getChildAt(0).height
+            currentLine = lineCount * scrollY / height
             invalidate()
         }
+        historyManager = EdittextHistoryManager(this)
+    }
 
-        edittextHistoryManager = EdittextHistoryManager(
-            edittext!!
+    override fun onDraw(canvas: Canvas) {
+        val lineCount = lineCount
+        val digits = log10(lineCount.toDouble()).toInt()
+        val textWidth = lineNumberPaint.measureText(lineCount.toString()).toInt()
+        val selectedLine = selectedLine // getter
+        getDrawingRect(rect)
+        var line = 1
+        for (i in 0 until lineCount) {
+            if (i != 0 && text?.get(layout.getLineStart(i) - 1) != '\n') continue
+            val lineBound = getLineBounds(i, null).toFloat()
+            val spaceCount = digits - log10(i.toDouble()).toInt()
+            canvas.drawText(
+                "${getSpace(spaceCount)}$line",
+                rect.left + dp * 4.toFloat(),
+                lineBound,
+                lineNumberPaint
+            )
+            line++
+        }
+
+        /*for (i in currentLine - 20..currentLine + 80) {
+            if (i in 1..lineCount) {
+                val baseline = editText!!.getLineBounds(i - 1, lineRect)
+                val spaceCount = digits - log10(i.toDouble()).toInt()
+                canvas.drawText(
+                        getSpace(spaceCount) + i,
+                        rect!!.left + dp!! * 4.toFloat(),
+                        baseline.toFloat(),
+                        lineNumberPaint!!
+                )
+                if (i - 1 == selectedLine) {
+                    lineRect!!.left += rect!!.left - dp!! * 4
+                    canvas.drawRect(lineRect!!, highlightPaint!!)
+                }
+            }
+        }*/
+
+        canvas.drawLine(
+            rect.left + textWidth + (dp * 8).toFloat(),
+            rect.top.toFloat(),
+            rect.left + textWidth + (dp * 8).toFloat(),
+            rect.bottom.toFloat(),
+            linePaint
         )
+
+        setPadding(textWidth + dp * 12, 0, 0, 0)
+        super.onDraw(canvas)
     }
 
-    fun undo(){
-        edittextHistoryManager!!.undo()
+    fun undo() {
+        historyManager.undo()
     }
 
-    fun redo(){
-        edittextHistoryManager!!.redo()
+    fun redo() {
+        historyManager.redo()
     }
 
     fun findText(string: String, ignoreUpper: Boolean = false): ArrayList<ArrayList<Int>> {
-        val lines = edittext!!.text.split("\n")
+        val lines = text.toString().split("\n")
         val array = ArrayList<ArrayList<Int>>()
-        for(i in lines.indices){
-            if(ignoreUpper){
-                val text = lines[i].toLowerCase(Locale.getDefault())
-                val lowerString = string.toLowerCase(Locale.getDefault())
-                if(text.contains(lowerString)){
+        for (i in lines.indices) {
+            if (ignoreUpper) {
+                val text = lines[i].toLowerCase(Locale.KOREA)
+                val lowerString = string.toLowerCase(Locale.KOREA)
+                if (text.contains(lowerString)) {
                     val index = text.indexOf(lowerString)
-                    val list = ArrayList<Int>()
-                    list.add(i)
-                    list.add(index)
+                    val list = arrayListOf(i, index)
                     array.add(list)
                 }
-            }
-            else {
-                if(lines[i].contains(string)){
+            } else {
+                if (lines[i].contains(string)) {
                     val index = lines[i].indexOf(string)
-                    val list = ArrayList<Int>()
-                    list.add(i)
-                    list.add(index)
+                    val list = arrayListOf(i, index)
                     array.add(list)
                 }
             }
@@ -189,46 +210,9 @@ class SimpleCodeEditor : ScrollView {
         return array
     }
 
-    override fun onDraw(canvas: Canvas) {
-        val lineCount = edittext!!.lineCount
-        val digits = log10(lineCount.toDouble()).toInt()
-        val textWidth = lineNumberPaint!!.measureText("" + lineCount).toInt()
-        val selectedLine = selectedLine
-        getDrawingRect(rect)
-
-        for (i in currentLine - 20..currentLine + 80) {
-            if (i in 1..lineCount) {
-                val baseline = edittext!!.getLineBounds(i - 1, lineRect)
-                val spaceCount = digits - log10(i.toDouble()).toInt()
-                canvas.drawText(
-                    getSpace(spaceCount) + i,
-                    rect!!.left + dp!! * 4.toFloat(),
-                    baseline.toFloat(),
-                    lineNumberPaint!!
-                )
-                if (i - 1 == selectedLine) {
-                    lineRect!!.left += rect!!.left - dp!! * 4
-                    canvas.drawRect(lineRect!!, highlightPaint!!)
-                }
-            }
-        }
-
-        canvas.drawLine(
-            rect!!.left + textWidth + (dp!! * 8).toFloat(),
-            rect!!.top.toFloat(),
-            rect!!.left + textWidth + (dp!!  * 8).toFloat(),
-            rect!!.bottom.toFloat(),
-            linePaint!!
-        )
-
-        edittext!!.setPadding(textWidth + dp!! * 12, 0, 0, 0)
-        super.onDraw(canvas)
-    }
-
     private val selectedLine: Int
         get() {
-            val selectionStart = Selection.getSelectionStart(edittext!!.text)
-            val layout = edittext!!.layout
+            val selectionStart = Selection.getSelectionStart(text)
             return if (selectionStart != -1) {
                 layout.getLineForOffset(selectionStart)
             } else -1
@@ -239,7 +223,4 @@ class SimpleCodeEditor : ScrollView {
         for (i in 0 until count) result.append(" ")
         return result.toString()
     }
-
-    val editor: EditText
-        get() = edittext!!
 }
