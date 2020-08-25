@@ -35,7 +35,7 @@ class SimpleCodeEditor : AppCompatEditText {
     )
 
     /**
-     * Create a new JavaScriptEditor.
+     * Create a new SimpleCodeEditor.
      * @param context current activity
      */
     constructor(context: Context) : super(context) {
