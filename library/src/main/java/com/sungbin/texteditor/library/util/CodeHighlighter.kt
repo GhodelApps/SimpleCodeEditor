@@ -12,7 +12,9 @@ class CodeHighlighter(
     private var stringColor: Int,
     private var annotationColor: Int
 ) {
+
     private val data = ArrayList<Highlighter>()
+
     private data class Highlighter(var value: String, var color: Int)
 
     init {
@@ -52,7 +54,8 @@ class CodeHighlighter(
             "super",
             "default",
             "java",
-            "io"
+            "io",
+            "Jsoup"
         )
         for (n in reservedColorData.indices) {
             data.add(
@@ -306,19 +309,23 @@ class CodeHighlighter(
                         start = end
                     }
                 }
+            } catch (ignored: Exception) {
             }
-            catch (ignored: Exception) {}
         }.start()
     }
 
     private fun checkNumber(str: String, index: Int): Boolean {
-        val start = getStartPos(str, index)
-        val end = getEndPos(str, index)
-        if (str[end - 1] == '.') return false
-        return if (start == 0) {
-            if (str[start] == '.') false else isNumber(str.substring(start, end))
-        } else {
-            if (str[start + 1] == '.') false else isNumber(str.substring(start + 1, end))
+        return try {
+            val start = getStartPos(str, index)
+            val end = getEndPos(str, index)
+            if (str[end - 1] == '.') return false
+            return if (start == 0) {
+                if (str[start] == '.') false else isNumber(str.substring(start, end))
+            } else {
+                if (str[start + 1] == '.') false else isNumber(str.substring(start + 1, end))
+            }
+        } catch (ignored: Exception) {
+            false
         }
     }
 
@@ -345,34 +352,38 @@ class CodeHighlighter(
     }
 
     private fun isSeparated(str: String, start: Int, end: Int): Boolean {
-        var front = false
-        val points = " []{}()+-*/%&|!?:;,<>=^~.".toCharArray()
-        if (start == 0) {
-            front = true
-        } else if (str[start - 1] == '\n') {
-            front = true
-        } else {
-            for (n in points.indices) {
-                if (str[start - 1] == points[n]) {
-                    front = true
-                    break
-                }
-            }
-        }
-        if (front) {
-            try {
-                if (str[end + 1] == '\n') {
-                    return true
-                } else {
-                    for (n in points.indices) {
-                        if (str[end + 1] == points[n]) return true
+        return try {
+            var front = false
+            val points = " []{}()+-*/%&|!?:;,<>=^~.".toCharArray()
+            if (start == 0) {
+                front = true
+            } else if (str[start - 1] == '\n') {
+                front = true
+            } else {
+                for (n in points.indices) {
+                    if (str[start - 1] == points[n]) {
+                        front = true
+                        break
                     }
                 }
-            } catch (e: Exception) {
-                return true
             }
+            if (front) {
+                try {
+                    if (str[end + 1] == '\n') {
+                        return true
+                    } else {
+                        for (n in points.indices) {
+                            if (str[end + 1] == points[n]) return true
+                        }
+                    }
+                } catch (ignored: Exception) {
+                    return true
+                }
+            }
+            false
+        } catch (ignored: Exception) {
+            false
         }
-        return false
     }
 
     private fun isNumber(value: String): Boolean {

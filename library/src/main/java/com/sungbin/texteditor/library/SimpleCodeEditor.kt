@@ -29,7 +29,7 @@ class SimpleCodeEditor : AppCompatEditText {
     private var stringColor = Color.argb(255, 255, 160, 0)
     private var annotationColor = Color.argb(255, 139, 195, 74)
 
-    private var highlighter = CodeHighlighter(
+    var highlighter = CodeHighlighter(
         reservedColor, numberColor,
         stringColor, annotationColor
     )
