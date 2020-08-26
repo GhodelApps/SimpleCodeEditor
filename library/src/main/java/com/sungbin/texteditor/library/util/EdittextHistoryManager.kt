@@ -13,10 +13,11 @@ import java.util.*
  * Created by SungBin on 2020-05-12.
  */
 
-class EdittextHistoryManager (private val view: TextView) {
+class EdittextHistoryManager(private val view: TextView) {
     private var mIsUndoOrRedo = false
     private val mEditHistory: EditHistory
     private val mChangeListener: EditTextChangeListener
+
     fun disconnect() {
         view.removeTextChangedListener(mChangeListener)
     }
@@ -90,42 +91,51 @@ class EdittextHistoryManager (private val view: TextView) {
         }
     }
 
-    @Throws(IllegalStateException::class)
     fun restorePersistentState(sp: SharedPreferences, prefix: String): Boolean {
-        val ok = doRestorePersistentState(sp, prefix)
-        if (!ok) {
-            mEditHistory.clear()
+        return try {
+            val ok = doRestorePersistentState(sp, prefix)
+            if (!ok) {
+                mEditHistory.clear()
+            }
+            ok
         }
-        return ok
+        catch (ignored: Exception) {
+            false
+        }
     }
 
     private fun doRestorePersistentState(
         sp: SharedPreferences,
         prefix: String
     ): Boolean {
-        val hash = sp.getString("$prefix.hash", null)
-            ?: return true
-        if (Integer.valueOf(hash) != view.text.toString().hashCode()) {
-            return false
-        }
-        mEditHistory.clear()
-        mEditHistory.mmMaxHistorySize = sp.getInt("$prefix.maxSize", -1)
-        val count = sp.getInt("$prefix.size", -1)
-        if (count == -1) {
-            return false
-        }
-        for (i in 0 until count) {
-            val pre = "$prefix.$i"
-            val start = sp.getInt("$pre.start", -1)
-            val before = sp.getString("$pre.before", null)
-            val after = sp.getString("$pre.after", null)
-            if (start == -1 || before == null || after == null) {
+        return try {
+            val hash = sp.getString("$prefix.hash", null)
+                ?: return true
+            if (Integer.valueOf(hash) != view.text.toString().hashCode()) {
                 return false
             }
-            mEditHistory.add(EditItem(start, before, after))
+            mEditHistory.clear()
+            mEditHistory.mmMaxHistorySize = sp.getInt("$prefix.maxSize", -1)
+            val count = sp.getInt("$prefix.size", -1)
+            if (count == -1) {
+                return false
+            }
+            for (i in 0 until count) {
+                val pre = "$prefix.$i"
+                val start = sp.getInt("$pre.start", -1)
+                val before = sp.getString("$pre.before", null)
+                val after = sp.getString("$pre.after", null)
+                if (start == -1 || before == null || after == null) {
+                    return false
+                }
+                mEditHistory.add(EditItem(start, before, after))
+            }
+            mEditHistory.mmPosition = sp.getInt("$prefix.position", -1)
+            mEditHistory.mmPosition != -1
         }
-        mEditHistory.mmPosition = sp.getInt("$prefix.position", -1)
-        return mEditHistory.mmPosition != -1
+        catch (ignored: Exception) {
+            false
+        }
     }
 
     private inner class EditHistory {

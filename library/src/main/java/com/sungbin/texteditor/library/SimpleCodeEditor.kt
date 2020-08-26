@@ -102,15 +102,19 @@ class SimpleCodeEditor : AppCompatEditText {
             stringColor, annotationColor
         )
         attr.recycle()
-
         dp = context.resources.displayMetrics.density.toInt()
         gravity = Gravity.TOP or Gravity.START
         setHorizontallyScrolling(enableHorizontallyScroll)
         textSize = 14f
-        setTextColor(Color.BLACK)
-        doAfterTextChanged {
-            if (applyHighlight) highlighter.apply(it!!)
+        if (applyHighlight) {
+            text?.let { text ->
+                highlighter.apply(text)
+            }
+            doAfterTextChanged {
+                highlighter.apply(it!!)
+            }
         }
+        setTextColor(Color.BLACK)
         lineNumberPaint.apply {
             textSize = dp * lineTextSize.toFloat()
             color = lineNumberColor

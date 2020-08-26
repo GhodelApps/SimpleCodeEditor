@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CodeEditor</string>
+    <string name="sample_code">let calc = 1+1;\n\nfunction newLevel(){\n  clientMessage(calc);\n}</string>
 </resources>

@@ -12,9 +12,7 @@ class CodeHighlighter(
     private var stringColor: Int,
     private var annotationColor: Int
 ) {
-
     private val data = ArrayList<Highlighter>()
-
     private data class Highlighter(var value: String, var color: Int)
 
     init {
@@ -54,8 +52,7 @@ class CodeHighlighter(
             "super",
             "default",
             "java",
-            "io",
-            "Jsoup"
+            "io"
         )
         for (n in reservedColorData.indices) {
             data.add(
