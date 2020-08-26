@@ -42,7 +42,7 @@ dependencies {
 |`sce_lineNumberColor`|Set line number color|`Color.BLACK`|`Color`|
 |`sce_lineNumberTextSize`|Set line number text size|13|`Integer`|
 |`sce_focusLineColor`|Set focused line background color|`Color.CYAN`|`Color`|
-|`sce_applyHighlighter`|Set JavaScript Highlighter (It may cause freezing for long string)|`true`|`Boolean`|
+|`sce_applyHighlighter`|Set JavaScript Highlighter **(It may cause freezing for long string)**|`true`|`Boolean`|
 |`sce_reservedColor`|Set JavaScript Highlighter Reserved word color|`Color.argb(255, 21, 101, 192)`|`Color`|
 |`sce_numberColort`|Set JavaScript Highlighter Number color|`Color.argb(255, 191, 54, 12)`|`Color`|
 |`sce_stringColor`|Set JavaScript Highlighter String color|`Color.argb(255, 255, 160, 0)`|`Color`|
