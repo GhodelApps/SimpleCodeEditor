@@ -40,7 +40,7 @@ dependencies {
 |------------|-------------|-------------| -------------| 
 |`sce_lineColor`|Set line color|`lineNumberColor` value (= `Color.BLACK`)|`Color`|
 |`sce_lineNumberColor`|Set line number color|`Color.BLACK`|`Color`|
-|`sce_lineNumberTextSize`|Set line number text size|13|`Integer`|
+|`sce_lineNumberTextSize`|Set line number text size|`13sp`|`Integer`|
 |`sce_focusLineColor`|Set focused line background color|`Color.CYAN`|`Color`|
 |`sce_applyHighlighter`|Set JavaScript Highlighter **(It may cause freezing for long string)**|`true`|`Boolean`|
 |`sce_reservedColor`|Set JavaScript Highlighter Reserved word color|`Color.argb(255, 21, 101, 192)`|`Color`|
