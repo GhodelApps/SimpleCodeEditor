@@ -53,7 +53,7 @@ dependencies {
 ```kotlin
 undo()
 redo()
-applyHighlight(power: Boolean)
+applyHighlight(power: Boolean) // todo
 findText(string: String, ignoreUpper: Boolean = false) (will return ArrayList<ArrayList<Int>>, Int ArrayList have LineNumber and Index value)
 ```
 
