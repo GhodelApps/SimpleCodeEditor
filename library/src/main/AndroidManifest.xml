@@ -1,2 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sungbin.texteditor.library" />
+<manifest package="com.sungbin.texteditor.library">
+
+    <!--<application android:name=".App" />-->
+
+</manifest>

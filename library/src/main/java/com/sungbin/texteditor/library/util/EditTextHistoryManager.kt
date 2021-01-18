@@ -13,7 +13,7 @@ import java.util.*
  * Created by SungBin on 2020-05-12.
  */
 
-class EdittextHistoryManager(private val view: TextView) {
+class EditTextHistoryManager(private val view: TextView) {
     private var isUndoOrRedo = false
     private val editHistory: EditHistory
     private val changeListener: EditTextChangeListener
@@ -31,15 +31,15 @@ class EdittextHistoryManager(private val view: TextView) {
     }
 
     val canUndo: Boolean
-        get() = editHistory.mmPosition > 0
+        get() = editHistory.position > 0
 
     fun undo() {
-        val edit: EditItem = editHistory.previous ?: return
+        val edit = editHistory.previous ?: return
         val text = view.editableText
-        val start = edit.mmStart
-        val end = start + if (edit.mmAfter != null) edit.mmAfter.length else 0
+        val start = edit.start
+        val end = start + if (edit.after != null) edit.after.length else 0
         isUndoOrRedo = true
-        text.replace(start, end, edit.mmBefore)
+        text.replace(start, end, edit.before)
         isUndoOrRedo = false
         for (o in text.getSpans(
             0,
@@ -50,20 +50,20 @@ class EdittextHistoryManager(private val view: TextView) {
         }
         Selection.setSelection(
             text,
-            if (edit.mmBefore == null) start else start + edit.mmBefore.length
+            if (edit.before == null) start else start + edit.before.length
         )
     }
 
     val canRedo: Boolean
-        get() = editHistory.mmPosition < editHistory.mmHistory.size
+        get() = editHistory.position < editHistory.history.size
 
     fun redo() {
-        val edit: EditItem = editHistory.next ?: return
+        val edit = editHistory.next ?: return
         val text = view.editableText
-        val start = edit.mmStart
-        val end = start + if (edit.mmBefore != null) edit.mmBefore.length else 0
+        val start = edit.start
+        val end = start + if (edit.before != null) edit.before.length else 0
         isUndoOrRedo = true
-        text.replace(start, end, edit.mmAfter)
+        text.replace(start, end, edit.after)
         isUndoOrRedo = false
         for (o in text.getSpans(
             0,
@@ -74,32 +74,29 @@ class EdittextHistoryManager(private val view: TextView) {
         }
         Selection.setSelection(
             text,
-            if (edit.mmAfter == null) start else start + edit.mmAfter.length
+            if (edit.after == null) start else start + edit.after.length
         )
     }
 
     fun storePersistentState(editor: SharedPreferences.Editor, prefix: String) {
         editor.putString("$prefix.hash", view.text.toString().hashCode().toString())
-        editor.putInt("$prefix.maxSize", editHistory.mmMaxHistorySize)
-        editor.putInt("$prefix.position", editHistory.mmPosition)
-        editor.putInt("$prefix.size", editHistory.mmHistory.size)
-        for ((i, ei) in editHistory.mmHistory.withIndex()) {
-            val pre = "$prefix.$i"
-            editor.putInt("$pre.start", ei.mmStart)
-            editor.putString("$pre.before", ei.mmBefore.toString())
-            editor.putString("$pre.after", ei.mmAfter.toString())
+        editor.putInt("$prefix.maxSize", editHistory.maxHistorySizeValue)
+        editor.putInt("$prefix.position", editHistory.position)
+        editor.putInt("$prefix.size", editHistory.history.size)
+        for ((value, index) in editHistory.history.withIndex()) {
+            val pre = "$prefix.$value"
+            editor.putInt("$pre.start", index.start)
+            editor.putString("$pre.before", index.before.toString())
+            editor.putString("$pre.after", index.after.toString())
         }
     }
 
     fun restorePersistentState(sp: SharedPreferences, prefix: String): Boolean {
         return try {
             val ok = doRestorePersistentState(sp, prefix)
-            if (!ok) {
-                editHistory.clear()
-            }
+            if (!ok) editHistory.clear()
             ok
-        }
-        catch (ignored: Exception) {
+        } catch (ignored: Exception) {
             false
         }
     }
@@ -111,11 +108,11 @@ class EdittextHistoryManager(private val view: TextView) {
         return try {
             val hash = sp.getString("$prefix.hash", null)
                 ?: return true
-            if (Integer.valueOf(hash) != view.text.toString().hashCode()) {
+            if (hash.toInt() != view.text.toString().hashCode()) {
                 return false
             }
             editHistory.clear()
-            editHistory.mmMaxHistorySize = sp.getInt("$prefix.maxSize", -1)
+            editHistory.maxHistorySizeValue = sp.getInt("$prefix.maxSize", -1)
             val count = sp.getInt("$prefix.size", -1)
             if (count == -1) {
                 return false
@@ -130,100 +127,96 @@ class EdittextHistoryManager(private val view: TextView) {
                 }
                 editHistory.add(EditItem(start, before, after))
             }
-            editHistory.mmPosition = sp.getInt("$prefix.position", -1)
-            editHistory.mmPosition != -1
-        }
-        catch (ignored: Exception) {
+            editHistory.position = sp.getInt("$prefix.position", -1)
+            editHistory.position != -1
+        } catch (ignored: Exception) {
             false
         }
     }
 
     private inner class EditHistory {
-        var mmPosition = 0
-        var mmMaxHistorySize = -1
-        val mmHistory = LinkedList<EditItem>()
+        var position = 0
+        var maxHistorySizeValue = -1
+        val history = LinkedList<EditItem>()
 
         fun clear() {
-            mmPosition = 0
-            mmHistory.clear()
+            position = 0
+            history.clear()
         }
 
         fun add(item: EditItem) {
-            while (mmHistory.size > mmPosition) {
-                mmHistory.removeLast()
+            while (history.size > position) {
+                history.removeLast()
             }
-            mmHistory.add(item)
-            mmPosition++
-            if (mmMaxHistorySize >= 0) {
+            history.add(item)
+            position++
+            if (maxHistorySizeValue >= 0) {
                 trimHistory()
             }
         }
 
         fun setMaxHistorySize(maxHistorySize: Int) {
-            mmMaxHistorySize = maxHistorySize
-            if (mmMaxHistorySize >= 0) {
+            this.maxHistorySizeValue = maxHistorySize
+            if (this.maxHistorySizeValue >= 0) {
                 trimHistory()
             }
         }
 
         fun trimHistory() {
-            while (mmHistory.size > mmMaxHistorySize) {
-                mmHistory.removeFirst()
-                mmPosition--
+            while (history.size > maxHistorySizeValue) {
+                history.removeFirst()
+                position--
             }
-            if (mmPosition < 0) {
-                mmPosition = 0
+            if (position < 0) {
+                position = 0
             }
         }
 
         val previous: EditItem?
             get() {
-                if (mmPosition == 0) {
-                    return null
-                }
-                mmPosition--
-                return mmHistory[mmPosition]
+                return if (position == 0) null
+                else history[--position]
             }
 
         val next: EditItem?
             get() {
-                if (mmPosition >= mmHistory.size) {
+                if (position >= history.size) {
                     return null
                 }
-                val item = mmHistory[mmPosition]
-                mmPosition++
+                val item = history[position]
+                position++
                 return item
             }
     }
 
     private inner class EditItem(
-        val mmStart: Int,
-        val mmBefore: CharSequence?,
-        val mmAfter: CharSequence?
+        val start: Int,
+        val before: CharSequence?,
+        val after: CharSequence?
     )
 
     private inner class EditTextChangeListener : TextWatcher {
-        private var mBeforeChange: CharSequence? = null
-        private var mAfterChange: CharSequence? = null
+        private var beforeChange: CharSequence? = null
+        private var afterChange: CharSequence? = null
+
         override fun beforeTextChanged(
             s: CharSequence, start: Int, count: Int,
             after: Int
         ) {
-            if (isUndoOrRedo) {
-                return
-            }
-            mBeforeChange = s.subSequence(start, start + count)
+            if (isUndoOrRedo) return
+            beforeChange = s.subSequence(start, start + count)
         }
 
         override fun onTextChanged(
             s: CharSequence, start: Int, before: Int,
             count: Int
         ) {
-            if (isUndoOrRedo) {
-                return
+            try {
+                if (isUndoOrRedo) return
+                afterChange = s.subSequence(start, start + count)
+                editHistory.add(EditItem(start, beforeChange, afterChange))
+            } catch (ignored: Exception) {
             }
-            mAfterChange = s.subSequence(start, start + count)
-            editHistory.add(EditItem(start, mBeforeChange, mAfterChange))
         }
 
         override fun afterTextChanged(s: Editable) {}

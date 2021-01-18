@@ -11,7 +11,7 @@ import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.widget.doAfterTextChanged
 import com.sungbin.texteditor.library.util.CodeHighlighter
-import com.sungbin.texteditor.library.util.EdittextHistoryManager
+import com.sungbin.texteditor.library.util.EditTextHistoryManager
 import java.util.*
 import kotlin.math.log10
 import kotlin.properties.Delegates
@@ -25,7 +25,7 @@ class SimpleCodeEditor : AppCompatEditText {
     private var highlightPaint = Paint()
     private var enableHorizontallyScroll = false
     private var applyHighlight = true
-    private lateinit var historyManager: EdittextHistoryManager
+    private lateinit var historyManager: EditTextHistoryManager
 
     private var reservedColor = Color.argb(255, 21, 101, 192)
     private var numberColor = Color.argb(255, 191, 54, 12)
@@ -108,6 +108,7 @@ class SimpleCodeEditor : AppCompatEditText {
         dp = context.resources.displayMetrics.density.toInt()
         gravity = Gravity.TOP or Gravity.START
         setHorizontallyScrolling(enableHorizontallyScroll)
+        autoLinkMask
         textSize = 14f
         if (applyHighlight) {
             doAfterTextChanged {
@@ -131,7 +132,7 @@ class SimpleCodeEditor : AppCompatEditText {
         viewTreeObserver.addOnDrawListener {
             invalidate()
         }
-        historyManager = EdittextHistoryManager(this)
+        historyManager = EditTextHistoryManager(this)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -229,26 +230,14 @@ class SimpleCodeEditor : AppCompatEditText {
         return result.toString()
     }
 
-    private fun EditText.removeAllSpan() {
-        val removeSpans =
-            this.text?.getSpans(0, this.text?.length ?: 0, ForegroundColorSpan::class.java)
-        for (span in removeSpans ?: return) {
-            this.text?.removeSpan(span)
-        }
-    }
-
-    fun applyHighlight(power: Boolean) {
-        applyHighlight = power
-        if (power) {
-            doAfterTextChanged {
-                try {
-                    highlighter.apply(it ?: SpannableStringBuilder(""))
-                } catch (ignored: Exception) {
-                }
+    private fun EditText.removeAllSpans() {
+        try {
+            val removeSpans =
+                this.text?.getSpans(0, this.text?.length ?: 0, ForegroundColorSpan::class.java)
+            for (span in removeSpans ?: return) {
+                this.text?.removeSpan(span)
             }
-        } else {
-            this.removeAllSpan()
-            doAfterTextChanged {}
+        } catch (ignored: Exception) {
         }
     }
 }
