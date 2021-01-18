@@ -12,9 +12,7 @@ class CodeHighlighter(
     private var stringColor: Int,
     private var annotationColor: Int
 ) {
-
     private val data = ArrayList<Highlighter>()
-
     private data class Highlighter(var value: String, var color: Int)
 
     init {

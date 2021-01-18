@@ -14,33 +14,33 @@ import java.util.*
  */
 
 class EdittextHistoryManager(private val view: TextView) {
-    private var mIsUndoOrRedo = false
-    private val mEditHistory: EditHistory
-    private val mChangeListener: EditTextChangeListener
+    private var isUndoOrRedo = false
+    private val editHistory: EditHistory
+    private val changeListener: EditTextChangeListener
 
     fun disconnect() {
-        view.removeTextChangedListener(mChangeListener)
+        view.removeTextChangedListener(changeListener)
     }
 
     fun setMaxHistorySize(maxHistorySize: Int) {
-        mEditHistory.setMaxHistorySize(maxHistorySize)
+        editHistory.setMaxHistorySize(maxHistorySize)
     }
 
     fun clearHistory() {
-        mEditHistory.clear()
+        editHistory.clear()
     }
 
     val canUndo: Boolean
-        get() = mEditHistory.mmPosition > 0
+        get() = editHistory.mmPosition > 0
 
     fun undo() {
-        val edit: EditItem = mEditHistory.previous ?: return
+        val edit: EditItem = editHistory.previous ?: return
         val text = view.editableText
         val start = edit.mmStart
         val end = start + if (edit.mmAfter != null) edit.mmAfter.length else 0
-        mIsUndoOrRedo = true
+        isUndoOrRedo = true
         text.replace(start, end, edit.mmBefore)
-        mIsUndoOrRedo = false
+        isUndoOrRedo = false
         for (o in text.getSpans(
             0,
             text.length,
@@ -55,16 +55,16 @@ class EdittextHistoryManager(private val view: TextView) {
     }
 
     val canRedo: Boolean
-        get() = mEditHistory.mmPosition < mEditHistory.mmHistory.size
+        get() = editHistory.mmPosition < editHistory.mmHistory.size
 
     fun redo() {
-        val edit: EditItem = mEditHistory.next ?: return
+        val edit: EditItem = editHistory.next ?: return
         val text = view.editableText
         val start = edit.mmStart
         val end = start + if (edit.mmBefore != null) edit.mmBefore.length else 0
-        mIsUndoOrRedo = true
+        isUndoOrRedo = true
         text.replace(start, end, edit.mmAfter)
-        mIsUndoOrRedo = false
+        isUndoOrRedo = false
         for (o in text.getSpans(
             0,
             text.length,
@@ -80,10 +80,10 @@ class EdittextHistoryManager(private val view: TextView) {
 
     fun storePersistentState(editor: SharedPreferences.Editor, prefix: String) {
         editor.putString("$prefix.hash", view.text.toString().hashCode().toString())
-        editor.putInt("$prefix.maxSize", mEditHistory.mmMaxHistorySize)
-        editor.putInt("$prefix.position", mEditHistory.mmPosition)
-        editor.putInt("$prefix.size", mEditHistory.mmHistory.size)
-        for ((i, ei) in mEditHistory.mmHistory.withIndex()) {
+        editor.putInt("$prefix.maxSize", editHistory.mmMaxHistorySize)
+        editor.putInt("$prefix.position", editHistory.mmPosition)
+        editor.putInt("$prefix.size", editHistory.mmHistory.size)
+        for ((i, ei) in editHistory.mmHistory.withIndex()) {
             val pre = "$prefix.$i"
             editor.putInt("$pre.start", ei.mmStart)
             editor.putString("$pre.before", ei.mmBefore.toString())
@@ -95,7 +95,7 @@ class EdittextHistoryManager(private val view: TextView) {
         return try {
             val ok = doRestorePersistentState(sp, prefix)
             if (!ok) {
-                mEditHistory.clear()
+                editHistory.clear()
             }
             ok
         }
@@ -114,8 +114,8 @@ class EdittextHistoryManager(private val view: TextView) {
             if (Integer.valueOf(hash) != view.text.toString().hashCode()) {
                 return false
             }
-            mEditHistory.clear()
-            mEditHistory.mmMaxHistorySize = sp.getInt("$prefix.maxSize", -1)
+            editHistory.clear()
+            editHistory.mmMaxHistorySize = sp.getInt("$prefix.maxSize", -1)
             val count = sp.getInt("$prefix.size", -1)
             if (count == -1) {
                 return false
@@ -128,10 +128,10 @@ class EdittextHistoryManager(private val view: TextView) {
                 if (start == -1 || before == null || after == null) {
                     return false
                 }
-                mEditHistory.add(EditItem(start, before, after))
+                editHistory.add(EditItem(start, before, after))
             }
-            mEditHistory.mmPosition = sp.getInt("$prefix.position", -1)
-            mEditHistory.mmPosition != -1
+            editHistory.mmPosition = sp.getInt("$prefix.position", -1)
+            editHistory.mmPosition != -1
         }
         catch (ignored: Exception) {
             false
@@ -142,6 +142,7 @@ class EdittextHistoryManager(private val view: TextView) {
         var mmPosition = 0
         var mmMaxHistorySize = -1
         val mmHistory = LinkedList<EditItem>()
+
         fun clear() {
             mmPosition = 0
             mmHistory.clear()
@@ -208,7 +209,7 @@ class EdittextHistoryManager(private val view: TextView) {
             s: CharSequence, start: Int, count: Int,
             after: Int
         ) {
-            if (mIsUndoOrRedo) {
+            if (isUndoOrRedo) {
                 return
             }
             mBeforeChange = s.subSequence(start, start + count)
@@ -218,19 +219,19 @@ class EdittextHistoryManager(private val view: TextView) {
             s: CharSequence, start: Int, before: Int,
             count: Int
         ) {
-            if (mIsUndoOrRedo) {
+            if (isUndoOrRedo) {
                 return
             }
             mAfterChange = s.subSequence(start, start + count)
-            mEditHistory.add(EditItem(start, mBeforeChange, mAfterChange))
+            editHistory.add(EditItem(start, mBeforeChange, mAfterChange))
         }
 
         override fun afterTextChanged(s: Editable) {}
     }
 
     init {
-        mEditHistory = EditHistory()
-        mChangeListener = EditTextChangeListener()
-        view.addTextChangedListener(mChangeListener)
+        editHistory = EditHistory()
+        changeListener = EditTextChangeListener()
+        view.addTextChangedListener(changeListener)
     }
 }
