@@ -54,7 +54,7 @@ dependencies {
 undo()
 redo()
 applyHighlight(power: Boolean) // todo
-findText(string: String, ignoreUpper: Boolean = false) (will return ArrayList<ArrayList<Int>>, Int ArrayList have LineNumber and Index value)
+findText(string: String, ignoreUpper: Boolean = false) // will return ArrayList<ArrayList<Int>>, Int ArrayList have LineNumber and Index value
 ```
 
 # Gradle Setting
