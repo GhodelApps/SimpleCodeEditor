@@ -30,7 +30,6 @@ dependencies {
 ## xml
 ```xml
 <com.sungbin.texteditor.library.SimpleCodeEditor
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 ```
