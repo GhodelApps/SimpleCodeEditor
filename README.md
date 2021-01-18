@@ -52,10 +52,9 @@ dependencies {
 
 ## all methods
 ```kotlin
-applyHighlight = boolean
-
 undo()
 redo()
+applyHighlight(power: Boolean)
 findText(string: String, ignoreUpper: Boolean = false) (will return ArrayList<ArrayList<Int>>, Int ArrayList have LineNumber and Index value)
 ```
 
