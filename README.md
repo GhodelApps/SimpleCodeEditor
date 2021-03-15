@@ -1,4 +1,4 @@
-<h1 align="center">SimpleCodeEditor</h1></br>
+<h1 align="center">SimpleCodeEditor [Deprecated; Don`t use this]</h1></br>
 <p align="center">⚡ SimpleCodeEditor with JavaScript Code Highlighter ⚡</p></br>
 <p align="center">
   <a href="https://github.com/sungbin5304/SimpleCodeEditor/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-Apache2-blue"/></a>
